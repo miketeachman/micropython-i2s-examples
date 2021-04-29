@@ -2,7 +2,7 @@
 
 This repository provides MicroPython example code, showing how to use the I2S protocol with development boards supporting MicroPython.  The I2S protocol can be used to play WAV audio files through a speaker or headphone, or to record microphone audio to a WAV file on a SD card. 
 
-The examples have been tested on 4 boards:  Pyboard D SF2W, Pyboard V1.1, ESP32, and ESP32 with PSRAM.  To use I2S with MicroPython you will need to make a custom MicroPython build and integrate a [pull request](https://github.com/micropython/micropython/pull/TODO) into the build.  Or, download and install one of the [pre-built firmware binaries](firmware)
+The examples have been tested on 4 boards:  Pyboard D SF2W, Pyboard V1.1, ESP32, and ESP32 with PSRAM.  To use I2S with MicroPython you will need to make a custom MicroPython build and integrate a [pull request](https://github.com/micropython/micropython/pull/7183) into the build.  Or, download and install one of the [pre-built firmware binaries](firmware)
 
 The goal is to have this Pull Request included in an official MicroPython release  
 
