@@ -141,7 +141,7 @@ audio_in = I2S(
 
 # setting a callback function makes the
 # readinto() method Non-Blocking
-audio_in.callback(i2s_callback_rx)
+audio_in.irq(i2s_callback_rx)
 
 # allocate sample arrays
 # memoryview used to reduce heap allocation in while loop

@@ -106,7 +106,7 @@ audio_out = I2S(
     bufferlen=BUFFER_LENGTH_IN_BYTES,
 )
 
-audio_out.callback(i2s_callback)
+audio_out.irq(i2s_callback)
 state = PAUSE
 
 wav = open("/sd/{}".format(WAV_FILE), "rb")
