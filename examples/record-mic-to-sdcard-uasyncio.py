@@ -153,7 +153,7 @@ try:
         bits=WAV_SAMPLE_SIZE_IN_BITS,
         format=FORMAT,
         rate=SAMPLE_RATE_IN_HZ,
-        bufferlen=BUFFER_LENGTH_IN_BYTES,
+        ibuf=BUFFER_LENGTH_IN_BYTES,
     )
 
     wav = open("/sd/{}".format(WAV_FILE), "wb")
