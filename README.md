@@ -2,12 +2,11 @@
 
 This repository provides MicroPython example code, showing how to use the I2S protocol with development boards supporting MicroPython.  The I2S protocol can be used to play WAV audio files through a speaker or headphone, or to record microphone audio to a WAV file on a SD card. 
 
-The examples have been tested on 4 boards:  Pyboard D SF2W, Pyboard V1.1, ESP32, and ESP32 with PSRAM.  To use I2S with MicroPython you will need to make a custom MicroPython build and integrate [pull request](https://github.com/micropython/micropython/pull/7183) into the build.  Or, download and install one of the [pre-built firmware binaries](firmware)
+The examples have been tested on 4 boards:  Pyboard D SF2W, Pyboard V1.1, ESP32, and ESP32 with PSRAM.  
 
-The goal is to have this Pull Requests included in an official MicroPython release  
+To use I2S with MicroPython you will need to download a [MicroPython build](https://micropython.org/download/) and program the development board.  I2S has been available in the nightly builds since July 5, 2021.
 
-#### Pre-built Firmware Binaries
-Pre-built firmware binaries based on the MicroPython V1.16 release are available in the [firmware](firmware) folder.  These binaries can be downloaded to a development board by following instructions posted at the [MicroPython download site](https://micropython.org/download/).
+The I2S feature is currently in a Technology Preview phase and may undergo changes as feedback is received from users. 
 
 #### Boards Tested
   * Pyboard D SF2W
@@ -42,7 +41,7 @@ The easiest way to get started with I2S is playing a pure tone to ear phones usi
     |LCK|WS pin|
     |DIN|SD pin|
 
-1. Download the appropriate firmware that supports the I2S protocol into the MicroPython development board
+1. Download and program the appropriate firmware that supports the I2S protocol into the MicroPython development board
 1. Establish a REPL connection to the board
 1. Load the example code `play-tone.py` into a text editor, found in the [examples](examples) folder
 1. Configure the pins SCK, WS, SD, and I2S_ID.  Refer to the GPIO mappings section, below
