@@ -14,21 +14,47 @@
 # - the readinto() method does not block.  A callback function
 #   is called when the buffer supplied to read_into() is filled
 
-import uos
+import os
 import time
 from machine import Pin
 from machine import I2S
 
-if uos.uname().machine.find("PYBv1") == 0:
-    pass
-elif uos.uname().machine.find("PYBD") == 0:
+if os.uname().machine.find("PYBv1") == 0:
+    
+    # ======= I2S CONFIGURATION =======
+    SCK_PIN = 'Y6'
+    WS_PIN = 'Y5'  
+    SD_PIN = 'Y8'
+    I2S_ID = 2
+    BUFFER_LENGTH_IN_BYTES = 40000
+    # ======= I2S CONFIGURATION =======
+    
+elif os.uname().machine.find("PYBD") == 0:
     import pyb
     pyb.Pin("EN_3V3").on()  # provide 3.3V on 3V3 output pin
-    uos.mount(pyb.SDCard(), "/sd")
-elif uos.uname().machine.find("ESP32") == 0:
+    os.mount(pyb.SDCard(), "/sd")
+    
+    # ======= I2S CONFIGURATION =======
+    SCK_PIN = 'Y6'
+    WS_PIN = 'Y5'  
+    SD_PIN = 'Y8'
+    I2S_ID = 2
+    BUFFER_LENGTH_IN_BYTES = 40000
+    # ======= I2S CONFIGURATION =======
+    
+elif os.uname().machine.find("ESP32") == 0:
     from machine import SDCard
     sd = SDCard(slot=3, sck=Pin(18), mosi=Pin(23), miso=Pin(19), cs=Pin(5))
-    uos.mount(sd, "/sd")
+    os.mount(sd, "/sd")
+    
+    # ======= I2S CONFIGURATION =======
+    SCK_PIN = 32
+    WS_PIN = 25
+    SD_PIN = 33
+    I2S_ID = 0
+    BUFFER_LENGTH_IN_BYTES = 40000
+    # ======= I2S CONFIGURATION =======
+    
 else:
     print("Warning: program not tested with this board")
 
@@ -38,14 +64,6 @@ WAV_SAMPLE_SIZE_IN_BITS = 16
 FORMAT = I2S.MONO
 SAMPLE_RATE_IN_HZ = 22050
 # ======= AUDIO CONFIGURATION =======
-
-# ======= I2S CONFIGURATION =======
-SCK_PIN = 13
-WS_PIN = 14
-SD_PIN = 34
-I2S_ID = 1
-BUFFER_LENGTH_IN_BYTES = 40000
-# ======= I2S CONFIGURATION =======
 
 RECORD = 0
 PAUSE = 1
@@ -109,10 +127,10 @@ def i2s_callback_rx(arg):
         num_bytes_written = wav.write(wav_header)
         # cleanup
         wav.close()
-        if uos.uname().machine.find("PYBD") == 0:
-            uos.umount("/sd")
-        if uos.uname().machine.find("ESP32") == 0:
-            uos.umount("/sd")
+        if os.uname().machine.find("PYBD") == 0:
+            os.umount("/sd")
+        if os.uname().machine.find("ESP32") == 0:
+            os.umount("/sd")
             sd.deinit()
         audio_in.deinit()
         print("Done")
@@ -123,15 +141,11 @@ def i2s_callback_rx(arg):
 wav = open("/sd/{}".format(WAV_FILE), "wb")
 pos = wav.seek(44)  # advance to first byte of Data section in WAV file
 
-sck_pin = Pin(SCK_PIN)
-ws_pin = Pin(WS_PIN)
-sd_pin = Pin(SD_PIN)
-
 audio_in = I2S(
     I2S_ID,
-    sck=sck_pin,
-    ws=ws_pin,
-    sd=sd_pin,
+    sck=Pin(SCK_PIN),
+    ws=Pin(WS_PIN),
+    sd=Pin(SD_PIN),
     mode=I2S.RX,
     bits=WAV_SAMPLE_SIZE_IN_BITS,
     format=FORMAT,

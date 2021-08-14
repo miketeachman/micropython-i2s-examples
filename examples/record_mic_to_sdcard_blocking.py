@@ -14,24 +14,49 @@
 # - the readinto() method blocks until
 #   the supplied buffer is filled
 
-import uos
+import os
 import time
 from machine import Pin
 from machine import I2S
 
-if uos.uname().machine.find("PYBv1") == 0:
-    pass
-elif uos.uname().machine.find("PYBD") == 0:
+if os.uname().machine.find("PYBv1") == 0:
+    
+    # ======= I2S CONFIGURATION =======
+    SCK_PIN = 'Y6'
+    WS_PIN = 'Y5'  
+    SD_PIN = 'Y8'
+    I2S_ID = 2
+    BUFFER_LENGTH_IN_BYTES = 40000
+    # ======= I2S CONFIGURATION =======
+    
+elif os.uname().machine.find("PYBD") == 0:
     import pyb
     pyb.Pin("EN_3V3").on()  # provide 3.3V on 3V3 output pin
-    uos.mount(pyb.SDCard(), "/sd")
-elif uos.uname().machine.find("ESP32") == 0:
+    os.mount(pyb.SDCard(), "/sd")
+    
+    # ======= I2S CONFIGURATION =======
+    SCK_PIN = 'Y6'
+    WS_PIN = 'Y5'  
+    SD_PIN = 'Y8'
+    I2S_ID = 2
+    BUFFER_LENGTH_IN_BYTES = 40000
+    # ======= I2S CONFIGURATION =======
+    
+elif os.uname().machine.find("ESP32") == 0:
     from machine import SDCard
     sd = SDCard(slot=3, sck=Pin(18), mosi=Pin(23), miso=Pin(19), cs=Pin(5))
-    uos.mount(sd, "/sd")
+    os.mount(sd, "/sd")
+    
+    # ======= I2S CONFIGURATION =======
+    SCK_PIN = 32
+    WS_PIN = 25
+    SD_PIN = 33
+    I2S_ID = 0
+    BUFFER_LENGTH_IN_BYTES = 40000
+    # ======= I2S CONFIGURATION =======
+    
 else:
     print("Warning: program not tested with this board")
-
 
 # ======= AUDIO CONFIGURATION =======
 WAV_FILE = "mic.wav"
@@ -40,14 +65,6 @@ WAV_SAMPLE_SIZE_IN_BITS = 32
 FORMAT = I2S.MONO
 SAMPLE_RATE_IN_HZ = 22050
 # ======= AUDIO CONFIGURATION =======
-
-# ======= I2S CONFIGURATION =======
-SCK_PIN = "Y6"
-WS_PIN = "Y5"
-SD_PIN = "Y8"
-I2S_ID = 2
-BUFFER_LENGTH_IN_BYTES = 40000
-# ======= I2S CONFIGURATION =======
 
 format_to_channels = {I2S.MONO: 1, I2S.STEREO: 2}
 NUM_CHANNELS = format_to_channels[FORMAT]
@@ -88,15 +105,11 @@ wav_header = create_wav_header(
 )
 num_bytes_written = wav.write(wav_header)
 
-sck_pin = Pin(SCK_PIN)
-ws_pin = Pin(WS_PIN)
-sd_pin = Pin(SD_PIN)
-
 audio_in = I2S(
     I2S_ID,
-    sck=sck_pin,
-    ws=ws_pin,
-    sd=sd_pin,
+    sck=Pin(SCK_PIN),
+    ws=Pin(WS_PIN),
+    sd=Pin(SD_PIN),
     mode=I2S.RX,
     bits=WAV_SAMPLE_SIZE_IN_BITS,
     format=FORMAT,
@@ -131,9 +144,9 @@ except (KeyboardInterrupt, Exception) as e:
 
 # cleanup
 wav.close()
-if uos.uname().machine.find("PYBD") == 0:
-    uos.umount("/sd")
-if uos.uname().machine.find("ESP32") == 0:
-    uos.umount("/sd")
+if os.uname().machine.find("PYBD") == 0:
+    os.umount("/sd")
+if os.uname().machine.find("ESP32") == 0:
+    os.umount("/sd")
     sd.deinit()
 audio_in.deinit()

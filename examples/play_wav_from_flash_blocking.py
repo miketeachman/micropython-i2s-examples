@@ -4,55 +4,69 @@
 
 # Purpose:  Play a WAV audio file out of a speaker or headphones
 #
-# - read audio samples from a WAV file on SD Card
+# - read audio samples from a WAV file stored on internal flash memory
 # - write audio samples to an I2S amplifier or DAC module
 # - the WAV file will play continuously in a loop until
 #   a keyboard interrupt is detected or the board is reset
 #
 # Blocking version
 # - the write() method blocks until the entire sample buffer is written to I2S
+#
+# Use a tool such as rshell or ampy to copy the WAV file "side-to-side-8k-16bits-stereo.wav"
+# to internal flash memory
 
-import uos
+
+import os
 from machine import I2S
 from machine import Pin
 
-if uos.uname().machine.find("PYBv1") == 0:
-    pass
-elif uos.uname().machine.find("PYBD") == 0:
+if os.uname().machine.find("PYBv1") == 0:
+    
+    # ======= I2S CONFIGURATION =======
+    SCK_PIN = 'Y6'
+    WS_PIN = 'Y5'  
+    SD_PIN = 'Y8'
+    I2S_ID = 2
+    BUFFER_LENGTH_IN_BYTES = 40000
+    # ======= I2S CONFIGURATION =======
+    
+elif os.uname().machine.find("PYBD") == 0:
     import pyb
     pyb.Pin("EN_3V3").on()  # provide 3.3V on 3V3 output pin
-    uos.mount(pyb.SDCard(), "/sd")
-elif uos.uname().machine.find("ESP32") == 0:
-    from machine import SDCard
-    sd = SDCard(slot=3, sck=Pin(18), mosi=Pin(23), miso=Pin(19), cs=Pin(5))
-    uos.mount(sd, "/sd")
+    
+    # ======= I2S CONFIGURATION =======
+    SCK_PIN = 'Y6'
+    WS_PIN = 'Y5'  
+    SD_PIN = 'Y8'
+    I2S_ID = 2
+    BUFFER_LENGTH_IN_BYTES = 40000
+    # ======= I2S CONFIGURATION =======
+    
+elif os.uname().machine.find("ESP32") == 0:
+    
+    # ======= I2S CONFIGURATION =======
+    SCK_PIN = 32
+    WS_PIN = 25
+    SD_PIN = 33
+    I2S_ID = 0
+    BUFFER_LENGTH_IN_BYTES = 40000
+    # ======= I2S CONFIGURATION =======
+    
 else:
     print("Warning: program not tested with this board")
 
 # ======= AUDIO CONFIGURATION =======
-WAV_FILE = "music-16k-32bits-stereo.wav"
-WAV_SAMPLE_SIZE_IN_BITS = 32
+WAV_FILE = "side-to-side-8k-16bits-stereo.wav"
+WAV_SAMPLE_SIZE_IN_BITS = 16
 FORMAT = I2S.STEREO
-SAMPLE_RATE_IN_HZ = 16000
+SAMPLE_RATE_IN_HZ = 8000
 # ======= AUDIO CONFIGURATION =======
-
-# ======= I2S CONFIGURATION =======
-SCK_PIN = 33
-WS_PIN = 25
-SD_PIN = 32
-I2S_ID = 1
-BUFFER_LENGTH_IN_BYTES = 40000
-# ======= I2S CONFIGURATION =======
-
-sck_pin = Pin(SCK_PIN)
-ws_pin = Pin(WS_PIN)
-sd_pin = Pin(SD_PIN)
 
 audio_out = I2S(
     I2S_ID,
-    sck=sck_pin,
-    ws=ws_pin,
-    sd=sd_pin,
+    sck=Pin(SCK_PIN),
+    ws=Pin(WS_PIN),
+    sd=Pin(SD_PIN),
     mode=I2S.TX,
     bits=WAV_SAMPLE_SIZE_IN_BITS,
     format=FORMAT,
@@ -60,7 +74,7 @@ audio_out = I2S(
     ibuf=BUFFER_LENGTH_IN_BYTES,
 )
 
-wav = open("/sd/{}".format(WAV_FILE), "rb")
+wav = open(WAV_FILE, "rb")
 pos = wav.seek(44)  # advance to first byte of Data section in WAV file
 
 # allocate sample array
@@ -86,10 +100,5 @@ except (KeyboardInterrupt, Exception) as e:
 
 # cleanup
 wav.close()
-if uos.uname().machine.find("PYBD") == 0:
-    uos.umount("/sd")
-if uos.uname().machine.find("ESP32") == 0:
-    uos.umount("/sd")
-    sd.deinit()
 audio_out.deinit()
 print("Done")

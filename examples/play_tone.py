@@ -11,19 +11,44 @@
 # Blocking version
 # - the write() method blocks until the entire sample buffer is written to I2S
 
-import uos
+import os
 import math
 import struct
 from machine import I2S
 from machine import Pin
 
-if uos.uname().machine.find("PYBv1") == 0:
-    pass
-elif uos.uname().machine.find("PYBD") == 0:
+if os.uname().machine.find("PYBv1") == 0:
+    
+    # ======= I2S CONFIGURATION =======
+    SCK_PIN = 'Y6'
+    WS_PIN = 'Y5'  
+    SD_PIN = 'Y8'
+    I2S_ID = 2
+    BUFFER_LENGTH_IN_BYTES = 10000
+    # ======= I2S CONFIGURATION =======
+    
+elif os.uname().machine.find("PYBD") == 0:
     import pyb
     pyb.Pin("EN_3V3").on()  # provide 3.3V on 3V3 output pin
-elif uos.uname().machine.find("ESP32") == 0:
-    pass
+    
+    # ======= I2S CONFIGURATION =======
+    SCK_PIN = 'Y6'
+    WS_PIN = 'Y5'  
+    SD_PIN = 'Y8'
+    I2S_ID = 2
+    BUFFER_LENGTH_IN_BYTES = 10000
+    # ======= I2S CONFIGURATION =======
+    
+elif os.uname().machine.find("ESP32") == 0:
+    
+    # ======= I2S CONFIGURATION =======
+    SCK_PIN = 32
+    WS_PIN = 25
+    SD_PIN = 33
+    I2S_ID = 0
+    BUFFER_LENGTH_IN_BYTES = 10000
+    # ======= I2S CONFIGURATION =======
+    
 else:
     print("Warning: program not tested with this board")
 
@@ -34,23 +59,11 @@ FORMAT = I2S.MONO  # only MONO supported in this example
 SAMPLE_RATE_IN_HZ = 22050
 # ======= AUDIO CONFIGURATION =======
 
-# ======= I2S CONFIGURATION =======
-SCK_PIN = "Y9"
-WS_PIN = "Y4"
-SD_PIN = "X22"
-I2S_ID = 2
-BUFFER_LENGTH_IN_BYTES = 10000
-# ======= I2S CONFIGURATION =======
-
-sck_pin = Pin(SCK_PIN)
-ws_pin = Pin(WS_PIN)
-sd_pin = Pin(SD_PIN)
-
 audio_out = I2S(
     I2S_ID,
-    sck=sck_pin,
-    ws=ws_pin,
-    sd=sd_pin,
+    sck=Pin(SCK_PIN),
+    ws=Pin(WS_PIN),
+    sd=Pin(SD_PIN),
     mode=I2S.TX,
     bits=SAMPLE_SIZE_IN_BITS,
     format=FORMAT,
