@@ -65,7 +65,9 @@ MicroPython example code is contained in the [examples](examples) folder.  WAV f
 Each example file has configuration parameters, marked with
 
 `# ======= AUDIO CONFIGURATION =======`
+
 and 
+
 `# ======= I2S CONFIGURATION =======`
 
 #### PyBoard GPIO Pins
@@ -87,6 +89,27 @@ All ESP32 examples use the following I2S peripheral ID and GPIO pins
 |0|32|25|33|
 
 To use different GPIO mappings refer to the sections below
+
+#### Easy WAV Player example
+The file `easy_wav_player.py` contains an easy-to-use micropython example for playing WAV files.  This example requires
+an SD Card (to store the WAV files).  Pyboards have a built in SD Card.  Some ESP32 development boards have a built-in SD Card, such as the Lolin D32 Pro.  Other devices, such as the TinyPico require an external SD Card Module to be wired in.
+
+Instructions
+1. Wire up the hardware.  e.g.  connect the I2S playback module to the development board, and connect an external SD Card Module (if needed).  See tips on hardware wiring below.  The example uses the default GPIO pins outlined above.  These can 
+be customized, if needed.
+1. copy file `wavplayer.py` to the internal flash file system using a command line tool such as ampy or rshell.
+1. copy the WAV file(s) you want to play to an SD Card.  Plug the SD Card into the SD Card Module.
+1. configure the file `easy_wav_player.py` to specify the WAV file(s) to play
+1. copy the file `easy_wav_player.py` to the internal flash file system using a command line tool such as ampy or rshell.
+1. run `easy_wav_player.py` by importing the file into the REPL.  e.g.  import easy_wav_player
+1. try various ways of playing a WAV file, using the `pause()`, `resume()`, and `stop()` methods
+
+MP3 files can be converted to WAV files using online applications such as
+[online-convert](https://audio.online-convert.com/convert-to-wav)
+
+WAV file tag data can be inspected using a downloadable application such as
+[MediaInfo](https://mediaarea.net/en/MediaInfo).
+This application is useful to check the sample rate, stereo versus mono, and sample bit size (16, 24, or 32 bits)
 
 #### Pyboard GPIO mappings for SCK, WS, SD
 
