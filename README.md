@@ -131,7 +131,7 @@ Pyboard V1.0/V1.1
 #### ESP32 GPIO mappings for SCK, WS, SD
 
 All ESP32 GPIO pins can be used for I2S, with attention to special cases:
-*   GPIO34 to GPIO39 are output-only
+*   GPIO34 to GPIO39 are input-only
 *   GPIO strapping pins:  see note below on using strapping pins
 
 Strapping Pin consideration:
