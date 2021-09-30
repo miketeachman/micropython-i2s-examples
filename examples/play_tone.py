@@ -24,7 +24,7 @@ if os.uname().machine.find("PYBv1") == 0:
     WS_PIN = 'Y5'  
     SD_PIN = 'Y8'
     I2S_ID = 2
-    BUFFER_LENGTH_IN_BYTES = 10000
+    BUFFER_LENGTH_IN_BYTES = 2000
     # ======= I2S CONFIGURATION =======
     
 elif os.uname().machine.find("PYBD") == 0:
@@ -36,19 +36,29 @@ elif os.uname().machine.find("PYBD") == 0:
     WS_PIN = 'Y5'  
     SD_PIN = 'Y8'
     I2S_ID = 2
-    BUFFER_LENGTH_IN_BYTES = 10000
+    BUFFER_LENGTH_IN_BYTES = 2000
     # ======= I2S CONFIGURATION =======
     
 elif os.uname().machine.find("ESP32") == 0:
+    
+    # ======= I2S CONFIGURATION =======
+    SCK_PIN = 33
+    WS_PIN = 25
+    SD_PIN = 32
+    I2S_ID = 0
+    BUFFER_LENGTH_IN_BYTES = 2000
+    # ======= I2S CONFIGURATION =======
+    
+elif os.uname().machine.find("Raspberry") == 0:
     
     # ======= I2S CONFIGURATION =======
     SCK_PIN = 32
     WS_PIN = 25
     SD_PIN = 33
     I2S_ID = 0
-    BUFFER_LENGTH_IN_BYTES = 10000
+    BUFFER_LENGTH_IN_BYTES = 2000
     # ======= I2S CONFIGURATION =======
-    
+
 else:
     print("Warning: program not tested with this board")
 
@@ -56,7 +66,7 @@ else:
 TONE_FREQUENCY_IN_HZ = 440
 SAMPLE_SIZE_IN_BITS = 16
 FORMAT = I2S.MONO  # only MONO supported in this example
-SAMPLE_RATE_IN_HZ = 22050
+SAMPLE_RATE_IN_HZ = 22_050
 # ======= AUDIO CONFIGURATION =======
 
 audio_out = I2S(

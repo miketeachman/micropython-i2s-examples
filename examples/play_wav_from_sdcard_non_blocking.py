@@ -56,9 +56,36 @@ elif os.uname().machine.find("ESP32") == 0:
     BUFFER_LENGTH_IN_BYTES = 40000
     # ======= I2S CONFIGURATION =======
     
+elif os.uname().machine.find("Raspberry") == 0:
+    from sdcard import SDCard
+    from machine import SPI
+    cs = Pin(13, machine.Pin.OUT)
+    spi = SPI(1,
+              baudrate=1_000_000, # this has no effect on spi bus speed to SD Card
+              polarity=0,
+              phase=0,
+              bits=8,
+              firstbit=machine.SPI.MSB,
+              sck=Pin(14),
+              mosi=Pin(15),
+              miso=Pin(12))
+    
+    sd = SDCard(spi, cs)
+    sd.init_spi(25_000_000) # increase SPI bus speed to SD card
+    vfs = os.VfsFat(sd)
+    os.mount(vfs, "/sd")
+    
+    # ======= I2S CONFIGURATION =======
+    SCK_PIN = 16
+    WS_PIN = 17
+    SD_PIN = 18
+    I2S_ID = 0
+    BUFFER_LENGTH_IN_BYTES = 40000
+    # ======= I2S CONFIGURATION =======
+
 else:
     print("Warning: program not tested with this board")
-    
+
 # ======= AUDIO CONFIGURATION =======
 WAV_FILE = "music-16k-16bits-mono.wav"
 WAV_SAMPLE_SIZE_IN_BITS = 16
@@ -85,15 +112,15 @@ def i2s_callback(arg):
         if num_read == 0:
             # end-of-file, advance to first byte of Data section
             pos = wav.seek(44)
-            num_written = audio_out.write(silence)
+            _ = audio_out.write(silence)
             micropython.schedule(eof_callback, None)
         else:
-            num_written = audio_out.write(wav_samples_mv[:num_read])
+            _ = audio_out.write(wav_samples_mv[:num_read])
     elif state == RESUME:
         state = PLAY
-        num_written = audio_out.write(silence)
+        _ = audio_out.write(silence)
     elif state == PAUSE:
-        num_written = audio_out.write(silence)
+        _ = audio_out.write(silence)
     elif state == STOP:
         # cleanup
         wav.close()
@@ -102,6 +129,9 @@ def i2s_callback(arg):
         if os.uname().machine.find("ESP32") == 0:
             os.umount("/sd")
             sd.deinit()
+        if os.uname().machine.find("Raspberry") == 0:
+            os.umount("/sd")
+            spi.deinit()        
         audio_out.deinit()
         print("Done")
     else:
@@ -123,7 +153,7 @@ audio_out.irq(i2s_callback)
 state = PAUSE
 
 wav = open("/sd/{}".format(WAV_FILE), "rb")
-pos = wav.seek(44)  # advance to first byte of Data section in WAV file
+_ = wav.seek(44)  # advance to first byte of Data section in WAV file
 
 # allocate a small array of blank samples
 silence = bytearray(1000)
@@ -132,7 +162,7 @@ silence = bytearray(1000)
 wav_samples = bytearray(10000)
 wav_samples_mv = memoryview(wav_samples)
 
-num_written = audio_out.write(silence)
+_ = audio_out.write(silence)
 
 # add runtime code here ....
 # changing 'state' will affect playback of audio file

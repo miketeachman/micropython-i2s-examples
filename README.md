@@ -2,9 +2,9 @@
 
 This repository provides MicroPython example code, showing how to use the I2S protocol with development boards supporting MicroPython.  The I2S protocol can be used to play WAV audio files through a speaker or headphone, or to record microphone audio to a WAV file on a SD card. 
 
-The examples have been tested on 4 boards:  Pyboard D SF2W, Pyboard V1.1, ESP32, and ESP32 with PSRAM.  
+The examples are supported on 3 ports:  STM32, ESP32, RP2.  
 
-To use I2S with MicroPython you will need to download a [MicroPython build](https://micropython.org/download/) and program the development board.  I2S has been available in the nightly builds since July 5, 2021.
+To use I2S with MicroPython you will need to download a [MicroPython build](https://micropython.org/download/) and program the development board.  I2S has been available since v1.17.
 
 The I2S feature is currently in a Technology Preview phase and may undergo changes as feedback is received from users. 
 
@@ -15,6 +15,7 @@ The I2S feature is currently in a Technology Preview phase and may undergo chang
   * Lolin D32 Pro
   * Lolin D32 with external SD card
   * TinyPico with external SD card
+  * Raspberry Pi Pico
   
 #### I2S Microphone Boards Tested
  * INMP441 microphone module available on ebay, aliexpress, amazon
@@ -34,25 +35,25 @@ The easiest way to get started with I2S is playing a pure tone to ear phones usi
 1. Load the example code `play_tone.py` into a text editor, found in the [examples](examples) folder
 1. Make the following wiring connections using a quality breadboard and jumper wires.  Use the GPIO pins that are listed in the example code file.  Refer to the section on `Hardware Wiring Recommendations` below.
 
-    |UDA1334A board pin|Pyboard V1.1 pin|Pyboard D pin|ESP32 pin|
-    |--|--|--|--|
-    |3V0|3V3|3V3|3V3|
-    |GND|GND|GND|GND|
-    |BCLK|Y6|Y6|32|
-    |WSEL|Y5|Y5|25|
-    |DIN|Y8|Y8|33|
+    |UDA1334A board pin|Pyboard V1.1 pin|Pyboard D pin|ESP32 pin|Pico Pin|
+    |--|--|--|--|--|
+    |3V0|3V3|3V3|3V3|3V3|
+    |GND|GND|GND|GND|GND|
+    |BCLK|Y6|Y6|32|16|
+    |WSEL|Y5|Y5|25|17|
+    |DIN|Y8|Y8|33|18|
 
-    |PCM5102 board pin|Pyboard V1.1 pin|Pyboard D pin|ESP32 pin|
-    |--|--|--|--|
-    |VIN|3V3|3V3|3V3|
-    |GND|GND|GND|GND|
-    |SCK|GND|GND|GND|
-    |BCK|Y6|Y6|32|
-    |LCK|Y5|Y5|25|
-    |DIN|Y8|Y8|33|
+    |PCM5102 board pin|Pyboard V1.1 pin|Pyboard D pin|ESP32 pin|Pico Pin|
+    |--|--|--|--|--|
+    |VIN|3V3|3V3|3V3|3V3|
+    |GND|GND|GND|GND|GND|
+    |SCK|GND|GND|GND|GND|
+    |BCK|Y6|Y6|32|16|
+    |LCK|Y5|Y5|25|17|
+    |DIN|Y8|Y8|33|18|
     
 1. Establish a REPL connection to the board
-1. Copy the code e.g.  ctrl-A, ctrl-C
+1. Copy the code from the editor e.g.  ctrl-A, ctrl-C
 1. Ctrl-E in the REPL
 1. Paste code into the REPL
 1. Ctrl-D in the REPL to run the code
@@ -90,15 +91,25 @@ All ESP32 examples use the following I2S peripheral ID and GPIO pins
 
 To use different GPIO mappings refer to the sections below
 
+#### Raspberry Pi Pico GPIO Pins
+
+All Pico examples use the following I2S peripheral ID and GPIO pins
+
+|I2S ID|SCK pin|WS pin|SD pin|
+|--|--|--|--|
+|0|16|17|18|
+
+To use different GPIO mappings refer to the sections below
+
 #### Easy WAV Player example
 The file `easy_wav_player.py` contains an easy-to-use micropython example for playing WAV files.  This example requires
-an SD Card (to store the WAV files).  Pyboards have a built in SD Card.  Some ESP32 development boards have a built-in SD Card, such as the Lolin D32 Pro.  Other devices, such as the TinyPico require an external SD Card Module to be wired in.
+an SD card (to store the WAV files).  Pyboards have a built in SD card.  Some ESP32 development boards have a built-in SD Card, such as the Lolin D32 Pro.  Other devices, such as the TinyPico and Raspberry Pi Pico require an external SD card module to be wired in.  Additionally, for the Raspberry Pi Pico [sdcard.py](https://github.com/micropython/micropython/blob/master/drivers/sdcard/sdcard.py) needs to be copied to the Pico's filesystem to enable SD card support.
 
 Instructions
 1. Wire up the hardware.  e.g.  connect the I2S playback module to the development board, and connect an external SD Card Module (if needed).  See tips on hardware wiring below.  The example uses the default GPIO pins outlined above.  These can 
 be customized, if needed.
 1. copy file `wavplayer.py` to the internal flash file system using a command line tool such as ampy or rshell.
-1. copy the WAV file(s) you want to play to an SD Card.  Plug the SD Card into the SD Card Module.
+1. copy the WAV file(s) you want to play to an SD card.  Plug the SD card into the SD card Module.
 1. configure the file `easy_wav_player.py` to specify the WAV file(s) to play
 1. copy the file `easy_wav_player.py` to the internal flash file system using a command line tool such as ampy or rshell.
 1. run `easy_wav_player.py` by importing the file into the REPL.  e.g.  import easy_wav_player
@@ -142,6 +153,10 @@ The following ESP32 GPIO strapping pins should be **used with caution**.  There 
 *   GPIO5 - used to configure SDIO Slave.  Internal pull-up resistor.
 *   GPIO12 - used to select flash voltage.  Internal pull-down resistor.
 *   GPIO15 - used to configure silencing of boot messages.  Internal pull-up resistor.
+
+#### Raspberry Pi Pico GPIO mappings for SCK, WS, SD
+
+All Pico GPIO pins can be used for I2S, with one limitation.  The WS pin number must be one greater than the SCK pin number. 
 
 ### Hardware Wiring Recommendations
 

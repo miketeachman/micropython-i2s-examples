@@ -54,6 +54,33 @@ elif os.uname().machine.find("ESP32") == 0:
     BUFFER_LENGTH_IN_BYTES = 40000
     # ======= I2S CONFIGURATION =======
     
+elif os.uname().machine.find("Raspberry") == 0:
+    from sdcard import SDCard
+    from machine import SPI
+    cs = Pin(13, machine.Pin.OUT)
+    spi = SPI(1,
+              baudrate=1_000_000, # this has no effect on spi bus speed to SD Card
+              polarity=0,
+              phase=0,
+              bits=8,
+              firstbit=machine.SPI.MSB,
+              sck=Pin(14),
+              mosi=Pin(15),
+              miso=Pin(12))
+    
+    sd = SDCard(spi, cs)
+    sd.init_spi(25_000_000) # increase SPI bus speed to SD card
+    vfs = os.VfsFat(sd)
+    os.mount(vfs, "/sd")
+    
+    # ======= I2S CONFIGURATION =======
+    SCK_PIN = 16
+    WS_PIN = 17
+    SD_PIN = 18
+    I2S_ID = 0
+    BUFFER_LENGTH_IN_BYTES = 40000
+    # ======= I2S CONFIGURATION =======
+    
 else:
     print("Warning: program not tested with this board")
 
@@ -67,7 +94,7 @@ SAMPLE_RATE_IN_HZ = 16000
 async def continuous_play(audio_out, wav):
     swriter = asyncio.StreamWriter(audio_out)
 
-    pos = wav.seek(44)  # advance to first byte of Data section in WAV file
+    _ = wav.seek(44)  # advance to first byte of Data section in WAV file
 
     # allocate sample array
     # memoryview used to reduce heap allocation
@@ -83,9 +110,13 @@ async def continuous_play(audio_out, wav):
         # end of WAV file?
         if num_read == 0:
             # end-of-file, advance to first byte of Data section
-            pos = wav.seek(44)
+            _ = wav.seek(44)
         else:
-            swriter.write(wav_samples_mv[:num_read])
+            # apply temporary workaround to eliminate heap allocation in uasyncio Stream class.
+            # workaround can be removed after acceptance of PR:
+            #    https://github.com/micropython/micropython/pull/7868
+            #swriter.write(wav_samples_mv[:num_read])
+            swriter.out_buf = wav_samples_mv[:num_read]
             await swriter.drain()
 
 async def another_task(name):
@@ -128,6 +159,9 @@ finally:
     if os.uname().machine.find("ESP32") == 0:
         os.umount("/sd")
         sd.deinit()
+    if os.uname().machine.find("Raspberry") == 0:
+        os.umount("/sd")
+        spi.deinit()
     audio_out.deinit()
     ret = asyncio.new_event_loop()  # Clear retained uasyncio state
     print("==========  DONE PLAYBACK ==========")

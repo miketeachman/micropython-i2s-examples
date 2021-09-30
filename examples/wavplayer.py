@@ -20,6 +20,7 @@
 # All methods are non-blocking.  
 # The WAV file header is parsed in the play() method to get audio parameters
 
+import os
 import struct
 from machine import I2S
     
@@ -30,12 +31,13 @@ class WavPlayer:
     FLUSH = 3
     STOP = 4
 
-    def __init__(self, id, sck_pin, ws_pin, sd_pin, ibuf):
+    def __init__(self, id, sck_pin, ws_pin, sd_pin, ibuf, root="/sd"):
         self.id = id
         self.sck_pin = sck_pin
         self.ws_pin = ws_pin
         self.sd_pin = sd_pin
         self.ibuf = ibuf
+        self.root = root.rstrip("/") + "/"
         self.state = WavPlayer.STOP 
         self.wav = None
         self.loop = False
@@ -44,8 +46,6 @@ class WavPlayer:
         self.bits_per_sample = None
         self.first_sample_offset = None
         self.num_read = 0
-        self.num_written = 0
-        self.pos = 0
         self.sbuf = 1000
         self.nflush = 0
                 
@@ -65,22 +65,22 @@ class WavPlayer:
                     self.state = WavPlayer.FLUSH
                 else:
                     # advance to first byte of Data section
-                    self.pos = self.wav.seek(self.first_sample_offset)
-                self.num_written = self.audio_out.write(self.silence_samples)
+                    _ = self.wav.seek(self.first_sample_offset)
+                _ = self.audio_out.write(self.silence_samples)
             else:
-                self.num_written = self.audio_out.write(self.wav_samples_mv[:self.num_read])
+                _ = self.audio_out.write(self.wav_samples_mv[:self.num_read])
         elif self.state == WavPlayer.RESUME:
             self.state = WavPlayer.PLAY
-            self.num_written = self.audio_out.write(self.silence_samples)
+            _ = self.audio_out.write(self.silence_samples)
         elif self.state == WavPlayer.PAUSE:
-            self.num_written = self.audio_out.write(self.silence_samples)
+            _ = self.audio_out.write(self.silence_samples)
         elif self.state == WavPlayer.FLUSH:
             # Flush is used to allow the residual audio samples in the 
             # internal buffer to be written to the I2S peripheral.  This step
             # avoids part of the sound file from being cut off
             if self.nflush > 0:
                 self.nflush -= 1
-                self.num_written = self.audio_out.write(self.silence_samples)
+                _ = self.audio_out.write(self.silence_samples)
             else:
                 self.wav.close()
                 self.audio_out.deinit()
@@ -129,12 +129,14 @@ class WavPlayer:
         self.first_sample_offset = 44 + offset
         
     def play(self, wav_file, loop=False):
+        if os.listdir(self.root).count(wav_file) == 0:
+            raise ValueError('%s: not found' % wav_file)
         if self.state == WavPlayer.PLAY:
             raise ValueError("already playing a WAV file")
         elif self.state == WavPlayer.PAUSE:
             raise ValueError("paused while playing a WAV file")
         else:
-            self.wav = open("/sd/{}".format(wav_file), "rb")
+            self.wav = open(self.root + wav_file, "rb")
             self.loop = loop
             self.parse(self.wav)
             
@@ -149,13 +151,13 @@ class WavPlayer:
                 rate=self.sample_rate,
                 ibuf=self.ibuf,
             )
-            
+
             # advance to first byte of Data section in WAV file
-            pos = self.wav.seek(self.first_sample_offset)
+            _ = self.wav.seek(self.first_sample_offset)
             self.audio_out.irq(self.i2s_callback)
             self.nflush = self.ibuf // self.sbuf + 1
             self.state = WavPlayer.PLAY
-            self.num_written = self.audio_out.write(self.silence_samples)
+            _ = self.audio_out.write(self.silence_samples)
 
     def resume(self):
         if self.state != WavPlayer.PAUSE:

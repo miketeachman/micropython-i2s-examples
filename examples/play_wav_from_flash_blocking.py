@@ -27,7 +27,7 @@ if os.uname().machine.find("PYBv1") == 0:
     WS_PIN = 'Y5'  
     SD_PIN = 'Y8'
     I2S_ID = 2
-    BUFFER_LENGTH_IN_BYTES = 40000
+    BUFFER_LENGTH_IN_BYTES = 5000
     # ======= I2S CONFIGURATION =======
     
 elif os.uname().machine.find("PYBD") == 0:
@@ -39,7 +39,7 @@ elif os.uname().machine.find("PYBD") == 0:
     WS_PIN = 'Y5'  
     SD_PIN = 'Y8'
     I2S_ID = 2
-    BUFFER_LENGTH_IN_BYTES = 40000
+    BUFFER_LENGTH_IN_BYTES = 5000
     # ======= I2S CONFIGURATION =======
     
 elif os.uname().machine.find("ESP32") == 0:
@@ -49,7 +49,17 @@ elif os.uname().machine.find("ESP32") == 0:
     WS_PIN = 25
     SD_PIN = 33
     I2S_ID = 0
-    BUFFER_LENGTH_IN_BYTES = 40000
+    BUFFER_LENGTH_IN_BYTES = 5000
+    # ======= I2S CONFIGURATION =======
+    
+elif os.uname().machine.find("Raspberry") == 0:
+    
+    # ======= I2S CONFIGURATION =======
+    SCK_PIN = 16
+    WS_PIN = 17
+    SD_PIN = 18
+    I2S_ID = 0
+    BUFFER_LENGTH_IN_BYTES = 5000
     # ======= I2S CONFIGURATION =======
     
 else:
@@ -79,7 +89,7 @@ pos = wav.seek(44)  # advance to first byte of Data section in WAV file
 
 # allocate sample array
 # memoryview used to reduce heap allocation
-wav_samples = bytearray(10000)
+wav_samples = bytearray(1000)
 wav_samples_mv = memoryview(wav_samples)
 
 # continuously read audio samples from the WAV file
