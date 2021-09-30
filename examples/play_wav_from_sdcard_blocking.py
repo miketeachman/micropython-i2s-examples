@@ -41,7 +41,7 @@ elif os.uname().machine.find("PYBD") == 0:
     
 elif os.uname().machine.find("ESP32") == 0:
     from machine import SDCard
-    sd = SDCard(slot=3, sck=Pin(18), mosi=Pin(23), miso=Pin(19), cs=Pin(5))
+    sd = SDCard(slot=2) # sck=18, mosi=23, miso=19, cs=5 
     os.mount(sd, "/sd")
     
     # ======= I2S CONFIGURATION =======
