@@ -42,9 +42,9 @@ elif os.uname().machine.find("PYBD") == 0:
 elif os.uname().machine.find("ESP32") == 0:
     
     # ======= I2S CONFIGURATION =======
-    SCK_PIN = 33
+    SCK_PIN = 32
     WS_PIN = 25
-    SD_PIN = 32
+    SD_PIN = 33
     I2S_ID = 0
     BUFFER_LENGTH_IN_BYTES = 2000
     # ======= I2S CONFIGURATION =======
@@ -52,9 +52,9 @@ elif os.uname().machine.find("ESP32") == 0:
 elif os.uname().machine.find("Raspberry") == 0:
     
     # ======= I2S CONFIGURATION =======
-    SCK_PIN = 32
-    WS_PIN = 25
-    SD_PIN = 33
+    SCK_PIN = 16
+    WS_PIN = 17
+    SD_PIN = 18
     I2S_ID = 0
     BUFFER_LENGTH_IN_BYTES = 2000
     # ======= I2S CONFIGURATION =======
