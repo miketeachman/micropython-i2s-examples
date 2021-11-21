@@ -204,24 +204,57 @@ Connections made with Female-Female jumpers and header pins
 
 ![esp32_uda](images/esp32_uda.jpg)
 
-### INMP441 microphone board with Pyboard V1.1
+#### INMP441 microphone board with Pyboard V1.1
 
 Connections made with Female-Female jumpers and header pins
 
 ![pybv11_mic](images/pybv1_mic.jpg)
 
-### INMP441 microphone board with Pyboard D
+#### INMP441 microphone board with Pyboard D
 
 Connections made with Female-Female jumpers and header pins
 
 ![pybd_mic](images/pybd_mic.jpg)
 
-### INMP441 microphone board with ESP32
+#### INMP441 microphone board with ESP32
 
 Connections made with Female-Female jumpers and header pins
 
 ![esp32_mic](images/esp32_mic.jpg)
  
-### Workaround for Adafruit I2S MEMS Microphone Breakout - SPH0645LM4H
+### Projects that use I2S
+1. [Micro-gui audio demo](https://github.com/peterhinch/micropython-micro-gui/blob/main/gui/demos/audio.py)
+2. [Street Sense](https://hackaday.io/project/162059-street-sense)
+
+### Explaining the I2S protocol with buckets and water
+
+The I2S protocol is different than other protocols such as I2C and SPI.  Those protocols are transactional.  A producer requests data from a consumer and waits for a reply.  I2S is a streaming protocol. Data flows continuously, ideally without gaps.
+
+It's interesting to use a water and bucket analogy for the MicroPython I2S implementation.  Consider writing a DAC using I2S.  The internal buffer(ibuf) can be considered as a large bucket of water, with a hole in the bottom that drains the bucket. The water streaming out of the bottom is analogous to the flow of audio samples going into the I2S hardware. That flow must be constant and at a fixed rate. The user facing buffer is like a small bucket that is used to fill the large bucket. In the case of I2S writes, the small bucket is used to transport audio samples from a Wav file "lake" and fill the large bucket (ibuf). Imagine a person using the small bucket to move audio samples from the Wav file to the large bucket;  if the large bucket becomes full, the person might go do another task, and come back later to see if there is more room in the large bucket.  When they return, if there is space in the large bucket, they will pour some more water (samples) into the large bucket.  Initially, the large buffer is empty. Almost immediately after water is poured into the large bucket audio samples stream out of the bottom and sound is heard almost immediately.  After the last small bucket is poured into the large bucket it will take some time to drain the large bucket -- sound will be heard for some amount of time after the last small bucket is poured in.
+
+If the person is too slow to refill the large bucket it will run dry and the water flow stops, a condition called "underflow" -- there will be a gap in sound produced.
+
+Does a water analogy help to explain I2S?  comments welcome !
+
+![bucket_analogy](images/bucket.jpg)
+
+### FAQ
+Q: Are there sizing guidelines for the internal buffer (ibuf)?   
+A: A good starting point is to size the ibuf = 2x user buffer size.   For example, if the user buffer is 10kB, ibuf could be sized at 20kB.  If gaps are detected in the audio sample stream increasing the size of ibuf may mitigate these gaps. 
+
+Q: How many seconds of audio data is held in the internal buffer (ibuf)?   
+A: T[seconds] = ibuf-size-in-bytes / sample-rate-in-samples-per-second / num-channels / sample-size-in-bytes    
+stereo = 2 channels, mono = 1 channel.
+
+Q: Are there sizing guidelines for the user buffer?  
+A: Smaller sizes will favour efficient use of heap space, but suffer from the inherent inefficiency of more switching between filling and emptying.  A larger user buffer size suffers from a longer time of processing the samples or time to fill from a SD card - this longer time may block critical time functions from running.  A good starting point is a user buffer of 5kB.
+
+Q: What conditions causes gaps in the sample stream?  
+A: For writes to a DAC, a gap will happen when the internal buffer is filled at a slower rate than samples being sent to the I2S DAC.  This is called underflow.  For reads from a microphone, a gap will happen when the internal buffer is emptied at a slower rate than sample data is being read from the microphone.  This is called overflow.
+
+Q: Does the MicroPython I2S class support devices that need a MCLK signal?  
+A: No.  Supported I2S devices create an internally generated MCLK using the SCK or WS signals and a PLL.
+
+#### Workaround for Adafruit I2S MEMS Microphone Breakout - SPH0645LM4H
 This is a well designed breakout board based on the SPH0645LM4H microphone device. Users need to be aware that the SPH0645LM4H device implements non-standard Philips I2S timing.  When used with the ESP32, all audio samples coming from the I2S microphone are shifted to the left by one bit. This increases the sound level by 6dB. More details on this problem are outlined a [StreetSense project log](https://hackaday.io/project/162059-street-sense/log/160705-new-i2s-microphone).  
 Workaround:  Use the static I2S class method `shift()` to right shift all samples that are read from the microphone.
