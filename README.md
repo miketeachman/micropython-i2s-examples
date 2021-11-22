@@ -27,6 +27,7 @@ The I2S feature is currently in a Technology Preview phase and may undergo chang
    * Adafruit I2S Stereo Decoder - UDA1334A Breakout
    * I2S PCM5102 Stereo DAC Decoder available on ebay, aliexpress, amazon
    * Wondom 2 x 30W Class D Audio Amplifier Board & DAC, based on TI TAS5756 device
+   * Custom board, based on TI TAS2505 Digital Input Class-D Speaker Amplifier
    
 #### Quick Start - play an audio tone through ear phones
 The easiest way to get started with I2S is playing a pure tone to ear phones using a DAC board such as the I2S UDA1334A breakout board or the I2S PCM5102 Stereo DAC Decoder board.  Here are the steps:
