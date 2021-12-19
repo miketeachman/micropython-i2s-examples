@@ -226,6 +226,7 @@ Connections made with Female-Female jumpers and header pins
 ### Projects that use I2S
 1. [Micro-gui audio demo](https://github.com/peterhinch/micropython-micro-gui/blob/main/gui/demos/audio.py)
 2. [Street Sense](https://hackaday.io/project/162059-street-sense)
+3. [Tensorflow Micropython Examples - Micro-speech](https://github.com/mocleiri/tensorflow-micropython-examples/tree/main/examples/micro-speech)
 
 ### Explaining the I2S protocol with buckets and water
 
