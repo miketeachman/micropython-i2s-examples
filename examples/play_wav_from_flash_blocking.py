@@ -1,5 +1,5 @@
 # The MIT License (MIT)
-# Copyright (c) 2021 Mike Teachman
+# Copyright (c) 2022 Mike Teachman
 # https://opensource.org/licenses/MIT
 
 # Purpose:  Play a WAV audio file out of a speaker or headphones
@@ -20,30 +20,31 @@ import os
 from machine import I2S
 from machine import Pin
 
-if os.uname().machine.find("PYBv1") == 0:
-    
+if os.uname().machine.count("PYBv1"):
+
     # ======= I2S CONFIGURATION =======
-    SCK_PIN = 'Y6'
-    WS_PIN = 'Y5'  
-    SD_PIN = 'Y8'
+    SCK_PIN = "Y6"
+    WS_PIN = "Y5"
+    SD_PIN = "Y8"
     I2S_ID = 2
     BUFFER_LENGTH_IN_BYTES = 5000
     # ======= I2S CONFIGURATION =======
-    
-elif os.uname().machine.find("PYBD") == 0:
+
+elif os.uname().machine.count("PYBD"):
     import pyb
+
     pyb.Pin("EN_3V3").on()  # provide 3.3V on 3V3 output pin
-    
+
     # ======= I2S CONFIGURATION =======
-    SCK_PIN = 'Y6'
-    WS_PIN = 'Y5'  
-    SD_PIN = 'Y8'
+    SCK_PIN = "Y6"
+    WS_PIN = "Y5"
+    SD_PIN = "Y8"
     I2S_ID = 2
     BUFFER_LENGTH_IN_BYTES = 5000
     # ======= I2S CONFIGURATION =======
-    
-elif os.uname().machine.find("ESP32") == 0:
-    
+
+elif os.uname().machine.count("ESP32"):
+
     # ======= I2S CONFIGURATION =======
     SCK_PIN = 32
     WS_PIN = 25
@@ -51,9 +52,9 @@ elif os.uname().machine.find("ESP32") == 0:
     I2S_ID = 0
     BUFFER_LENGTH_IN_BYTES = 5000
     # ======= I2S CONFIGURATION =======
-    
-elif os.uname().machine.find("Raspberry") == 0:
-    
+
+elif os.uname().machine.count("Raspberry"):
+
     # ======= I2S CONFIGURATION =======
     SCK_PIN = 16
     WS_PIN = 17
@@ -61,7 +62,17 @@ elif os.uname().machine.find("Raspberry") == 0:
     I2S_ID = 0
     BUFFER_LENGTH_IN_BYTES = 5000
     # ======= I2S CONFIGURATION =======
-    
+
+elif os.uname().machine.count("MIMXRT"):
+
+    # ======= I2S CONFIGURATION =======
+    SCK_PIN = 4
+    WS_PIN = 3
+    SD_PIN = 2
+    I2S_ID = 2
+    BUFFER_LENGTH_IN_BYTES = 5000
+    # ======= I2S CONFIGURATION =======
+
 else:
     print("Warning: program not tested with this board")
 
@@ -101,9 +112,9 @@ try:
         # end of WAV file?
         if num_read == 0:
             # end-of-file, advance to first byte of Data section
-            pos = wav.seek(44)
+            _ = wav.seek(44)
         else:
-            num_written = audio_out.write(wav_samples_mv[:num_read])
+            _ = audio_out.write(wav_samples_mv[:num_read])
 
 except (KeyboardInterrupt, Exception) as e:
     print("caught exception {} {}".format(type(e).__name__, e))

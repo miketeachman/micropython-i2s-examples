@@ -4,11 +4,11 @@ This repository provides MicroPython example code, showing how to use the I2S pr
 
 The examples are supported on 3 ports:  STM32, ESP32, RP2.  
 
-To use I2S with MicroPython on the Pyboards, ESP32, and Raspberry Pi Pico you will need to install a version of MicroPython firmware that supports I2S.  For these ports, I2S is supported in the v1.18 release and all nightly builds.
+To use I2S with MicroPython on the Pyboards, ESP32, and Raspberry Pi Pico you will need to install a version of MicroPython firmware that supports I2S.  For these ports, I2S is supported in the v1.18 release and all nightly builds.  There is also a PR to support I2S on the MIMXRT port. <TODO add PR reference>
 
 The I2S feature is currently in a Technology Preview phase and may undergo changes as feedback is received from users. 
 
-#### Boards Tested
+#### Development Boards Tested
   * Pyboard D SF2W
   * Pyboard V1.1
   * Adafruit Huzzah Feather ESP32 with external SD card
@@ -16,6 +16,7 @@ The I2S feature is currently in a Technology Preview phase and may undergo chang
   * Lolin D32 with external SD card
   * TinyPico with external SD card
   * Raspberry Pi Pico
+  * Teensy 4.1
   
 #### I2S Microphone Boards Tested
  * INMP441 microphone module available on ebay, aliexpress, amazon
@@ -36,22 +37,22 @@ The easiest way to get started with I2S is playing a pure tone to ear phones usi
 1. Load the example code `play_tone.py` into a text editor, found in the [examples](examples) folder
 1. Make the following wiring connections using a quality breadboard and jumper wires.  Use the GPIO pins that are listed in the example code file.  Refer to the section on `Hardware Wiring Recommendations` below.
 
-    |UDA1334A board pin|Pyboard V1.1 pin|Pyboard D pin|ESP32 pin|Pico Pin|
-    |--|--|--|--|--|
-    |3V0|3V3|3V3|3V3|3V3|
-    |GND|GND|GND|GND|GND|
-    |BCLK|Y6|Y6|32|16|
-    |WSEL|Y5|Y5|25|17|
-    |DIN|Y8|Y8|33|18|
+    |UDA1334A board pin|Pyboard V1.1 pin|Pyboard D pin|ESP32 pin|Pico Pin|Teensy 4.1 pin|
+    |--|--|--|--|--|--|
+    |3V0|3V3|3V3|3V3|3V3|3.3V|
+    |GND|GND|GND|GND|GND|GND|
+    |BCLK|Y6|Y6|32|16|4|
+    |WSEL|Y5|Y5|25|17|3|
+    |DIN|Y8|Y8|33|18|2|
 
-    |PCM5102 board pin|Pyboard V1.1 pin|Pyboard D pin|ESP32 pin|Pico Pin|
-    |--|--|--|--|--|
-    |VIN|3V3|3V3|3V3|3V3|
-    |GND|GND|GND|GND|GND|
-    |SCK|GND|GND|GND|GND|
-    |BCK|Y6|Y6|32|16|
-    |LCK|Y5|Y5|25|17|
-    |DIN|Y8|Y8|33|18|
+    |PCM5102 board pin|Pyboard V1.1 pin|Pyboard D pin|ESP32 pin|Pico Pin|Teensy 4.1 pin|
+    |--|--|--|--|--|--|
+    |VIN|3V3|3V3|3V3|3V3|3.3V|
+    |GND|GND|GND|GND|GND|GND|
+    |SCK|GND|GND|GND|GND|GND|
+    |BCK|Y6|Y6|32|16|4|
+    |LCK|Y5|Y5|25|17|3|
+    |DIN|Y8|Y8|33|18|2|
     
 1. Establish a REPL connection to the board
 1. Copy the code from the editor e.g.  ctrl-A, ctrl-C
@@ -71,6 +72,8 @@ Each example file has configuration parameters, marked with
 and 
 
 `# ======= I2S CONFIGURATION =======`
+
+Each example supports all MicroPython ports that offer I2S.  This has the benefit of having fewer example files, but comes at the cost of large example files (e.g. many blocks of code that start with lines like `elif os.uname().machine.count("Raspberry"):`). Examples can be simplified by removing the blocks of port-specific code that are not needed for a particular development board.
 
 #### PyBoard GPIO Pins
 
@@ -102,7 +105,22 @@ All Pico examples use the following I2S peripheral ID and GPIO pins
 
 To use different GPIO mappings refer to the sections below
 
-#### Easy WAV Player example
+#### MIMXRT (e.g. Teensy 4.1) GPIO Pins
+
+All MIMXRT examples use the following I2S peripheral ID and GPIO pins
+
+For transmitting to a DAC:
+|I2S ID|SCK pin|WS pin|SD pin|
+|--|--|--|--|
+|2|4|3|2|
+
+For receiving from a microphone:
+|I2S ID|SCK pin|WS pin|SD pin|
+|--|--|--|--|
+|1|21|20|8|
+
+
+To use different GPIO mappings refer to the sections below#### Easy WAV Player example
 The file `easy_wav_player.py` contains an easy-to-use micropython example for playing WAV files.  This example requires
 an SD card (to store the WAV files).  Pyboards have a built in SD card.  Some ESP32 development boards have a built-in SD Card, such as the Lolin D32 Pro.  Other devices, such as the TinyPico and Raspberry Pi Pico require an external SD card module to be wired in.  Additionally, for the Raspberry Pi Pico [sdcard.py](https://github.com/micropython/micropython/blob/master/drivers/sdcard/sdcard.py) needs to be copied to the Pico's filesystem to enable SD card support.
 
@@ -158,6 +176,48 @@ The following ESP32 GPIO strapping pins should be **used with caution**.  There 
 #### Raspberry Pi Pico GPIO mappings for SCK, WS, SD
 
 All Pico GPIO pins can be used for I2S, with one limitation.  The WS pin number must be one greater than the SCK pin number. 
+
+#### MIMXRT (e.g. Teensy 4.1) GPIO mappings for SCK, WS, SD
+
+On boards supporting NXP i.MX RT processors I2S compatible GPIO pins are mapped to a specific I2S hardware bus.  In addition, GPIO pins are further specified as either Transmit or Receive.  The tables below show this mapping for 3 boards.  For example, the GPIO pin 4 can only be used with I2S ID=2 and transmitting to a DAC.
+
+Teensy 4.1
+
+For transmitting to a DAC:
+|I2S ID|SCK pin|WS pin|SD pin|
+|--|--|--|--|
+|1|26,36|27,37|39,7|
+|2|4|3|2|
+
+For receiving from a microphone:
+|I2S ID|SCK pin|WS pin|SD pin|
+|--|--|--|--|
+|1|21|20|38,8|
+
+Teensy 4.0
+
+For transmitting to a DAC:
+|I2S ID|SCK pin|WS pin|SD pin|
+|--|--|--|--|
+|1|26,36|27,37|7|
+|2|4|3|2|
+
+For receiving from a microphone:
+|I2S ID|SCK pin|WS pin|SD pin|
+|--|--|--|--|
+|1|21|20|8|
+
+Seeed Arch Mix
+
+For transmitting to a DAC:
+|I2S ID|SCK pin|WS pin|SD pin|
+|--|--|--|--|
+|1|J4 14|J4 15|J4 13|
+
+For receiving from a microphone:
+|I2S ID|SCK pin|WS pin|SD pin|
+|--|--|--|--|
+|1|J4 11|J4 10|J4 12|
 
 ### Hardware Wiring Recommendations
 

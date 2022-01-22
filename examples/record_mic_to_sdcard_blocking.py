@@ -1,5 +1,5 @@
 # The MIT License (MIT)
-# Copyright (c) 2021 Mike Teachman
+# Copyright (c) 2022 Mike Teachman
 # https://opensource.org/licenses/MIT
 
 # Purpose: Read audio samples from an I2S microphone and write to SD card
@@ -18,34 +18,36 @@ import os
 from machine import Pin
 from machine import I2S
 
-if os.uname().machine.find("PYBv1") == 0:
-    
+if os.uname().machine.count("PYBv1"):
+
     # ======= I2S CONFIGURATION =======
-    SCK_PIN = 'Y6'
-    WS_PIN = 'Y5'  
-    SD_PIN = 'Y8'
+    SCK_PIN = "Y6"
+    WS_PIN = "Y5"
+    SD_PIN = "Y8"
     I2S_ID = 2
     BUFFER_LENGTH_IN_BYTES = 40000
     # ======= I2S CONFIGURATION =======
-    
-elif os.uname().machine.find("PYBD") == 0:
+
+elif os.uname().machine.count("PYBD"):
     import pyb
+
     pyb.Pin("EN_3V3").on()  # provide 3.3V on 3V3 output pin
     os.mount(pyb.SDCard(), "/sd")
-    
+
     # ======= I2S CONFIGURATION =======
-    SCK_PIN = 'Y6'
-    WS_PIN = 'Y5'  
-    SD_PIN = 'Y8'
+    SCK_PIN = "Y6"
+    WS_PIN = "Y5"
+    SD_PIN = "Y8"
     I2S_ID = 2
     BUFFER_LENGTH_IN_BYTES = 40000
     # ======= I2S CONFIGURATION =======
-    
-elif os.uname().machine.find("ESP32") == 0:
+
+elif os.uname().machine.count("ESP32"):
     from machine import SDCard
-    sd = SDCard(slot=2) # sck=18, mosi=23, miso=19, cs=5 
+
+    sd = SDCard(slot=2)  # sck=18, mosi=23, miso=19, cs=5
     os.mount(sd, "/sd")
-    
+
     # ======= I2S CONFIGURATION =======
     SCK_PIN = 32
     WS_PIN = 25
@@ -53,26 +55,28 @@ elif os.uname().machine.find("ESP32") == 0:
     I2S_ID = 0
     BUFFER_LENGTH_IN_BYTES = 40000
     # ======= I2S CONFIGURATION =======
-    
-elif os.uname().machine.find("Raspberry") == 0:
+
+elif os.uname().machine.count("Raspberry"):
     from sdcard import SDCard
     from machine import SPI
+
     cs = Pin(13, machine.Pin.OUT)
-    spi = SPI(1,
-              baudrate=1_000_000, # this has no effect on spi bus speed to SD Card
-              polarity=0,
-              phase=0,
-              bits=8,
-              firstbit=machine.SPI.MSB,
-              sck=Pin(14),
-              mosi=Pin(15),
-              miso=Pin(12))
-    
+    spi = SPI(
+        1,
+        baudrate=1_000_000,  # this has no effect on spi bus speed to SD Card
+        polarity=0,
+        phase=0,
+        bits=8,
+        firstbit=machine.SPI.MSB,
+        sck=Pin(14),
+        mosi=Pin(15),
+        miso=Pin(12),
+    )
+
     sd = SDCard(spi, cs)
-    sd.init_spi(25_000_000) # increase SPI bus speed to SD card
-    vfs = os.VfsFat(sd)
-    os.mount(vfs, "/sd")
-    
+    sd.init_spi(25_000_000)  # increase SPI bus speed to SD card
+    os.mount(sd, "/sd")
+
     # ======= I2S CONFIGURATION =======
     SCK_PIN = 16
     WS_PIN = 17
@@ -80,7 +84,21 @@ elif os.uname().machine.find("Raspberry") == 0:
     I2S_ID = 0
     BUFFER_LENGTH_IN_BYTES = 60000  # larger buffer to accommodate slow SD card driver
     # ======= I2S CONFIGURATION =======
-    
+
+elif os.uname().machine.count("MIMXRT"):
+    from machine import SDCard
+
+    sd = SDCard(1)  # Teensy 4.1: sck=45, mosi=43, miso=42, cs=44
+    os.mount(sd, "/sd")
+
+    # ======= I2S CONFIGURATION =======
+    SCK_PIN = 21
+    WS_PIN = 20
+    SD_PIN = 8
+    I2S_ID = 1
+    BUFFER_LENGTH_IN_BYTES = 40000
+    # ======= I2S CONFIGURATION =======
+
 else:
     print("Warning: program not tested with this board")
 
@@ -89,7 +107,7 @@ WAV_FILE = "mic.wav"
 RECORD_TIME_IN_SECONDS = 10
 WAV_SAMPLE_SIZE_IN_BITS = 16
 FORMAT = I2S.MONO
-SAMPLE_RATE_IN_HZ = 22050
+SAMPLE_RATE_IN_HZ = 22_050
 # ======= AUDIO CONFIGURATION =======
 
 format_to_channels = {I2S.MONO: 1, I2S.STEREO: 2}
@@ -170,12 +188,15 @@ except (KeyboardInterrupt, Exception) as e:
 
 # cleanup
 wav.close()
-if os.uname().machine.find("PYBD") == 0:
+if os.uname().machine.count("PYBD"):
     os.umount("/sd")
-if os.uname().machine.find("ESP32") == 0:
+elif os.uname().machine.count("ESP32"):
     os.umount("/sd")
     sd.deinit()
-if os.uname().machine.find("Raspberry") == 0:
+elif os.uname().machine.count("Raspberry"):
     os.umount("/sd")
     spi.deinit()
+elif os.uname().machine.count("MIMXRT"):
+    os.umount("/sd")
+    sd.deinit()
 audio_in.deinit()
