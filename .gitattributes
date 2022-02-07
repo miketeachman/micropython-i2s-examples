@@ -14,3 +14,4 @@
 *.bin binary
 *.dfu binary
 *.uf2 binary
+*.hex binary
