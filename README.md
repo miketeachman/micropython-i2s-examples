@@ -320,3 +320,6 @@ A: No.  Supported I2S devices create an internally generated MCLK using the SCK 
 #### Workaround for Adafruit I2S MEMS Microphone Breakout - SPH0645LM4H
 This is a well designed breakout board based on the SPH0645LM4H microphone device. Users need to be aware that the SPH0645LM4H device implements non-standard Philips I2S timing.  When used with the ESP32, all audio samples coming from the I2S microphone are shifted to the left by one bit. This increases the sound level by 6dB. More details on this problem are outlined a [StreetSense project log](https://hackaday.io/project/162059-street-sense/log/160705-new-i2s-microphone).  
 Workaround:  Use the static I2S class method `shift()` to right shift all samples that are read from the microphone.
+
+#### Attributions
+"Le blues de la vache" by Le Collectif Unifié de la Crécelle is licensed under CC BY-NC-SA 2.1
