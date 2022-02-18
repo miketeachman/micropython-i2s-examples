@@ -4,7 +4,7 @@ This repository provides MicroPython example code, showing how to use the I2S pr
 
 The examples are supported on 3 ports:  STM32, ESP32, RP2.  
 
-To use I2S with MicroPython on the Pyboards, ESP32, and Raspberry Pi Pico you will need to install a version of MicroPython firmware that supports I2S.  For these ports, I2S is supported in the v1.18 release and all nightly builds.  There is also a PR to support I2S on the MIMXRT port. <TODO add PR reference>
+To use I2S with MicroPython on the Pyboards, ESP32, and Raspberry Pi Pico you will need to install a version of MicroPython firmware that supports I2S.  For these ports, I2S is supported in the v1.18 release and all nightly builds.  There is also a PR to support I2S on the MIMXRT port, https://github.com/micropython/micropython/pull/8322
 
 The I2S feature is currently in a Technology Preview phase and may undergo changes as feedback is received from users. 
 
