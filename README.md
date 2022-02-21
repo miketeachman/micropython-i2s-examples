@@ -105,9 +105,9 @@ All Pico examples use the following I2S peripheral ID and GPIO pins
 
 To use different GPIO mappings refer to the sections below
 
-#### MIMXRT (e.g. Teensy 4.1) GPIO Pins
+#### MIMXRT (Teensy 4.0/4.1) GPIO Pins
 
-All MIMXRT examples use the following I2S peripheral ID and GPIO pins
+All MIMXRT examples are designed for the Teensy 4.0/4.1 boards and use the following I2S peripheral ID and GPIO pins
 
 For transmitting to a DAC:
 |I2S ID|SCK pin|WS pin|SD pin|
@@ -177,47 +177,47 @@ The following ESP32 GPIO strapping pins should be **used with caution**.  There 
 
 All Pico GPIO pins can be used for I2S, with one limitation.  The WS pin number must be one greater than the SCK pin number. 
 
-#### MIMXRT (e.g. Teensy 4.1) GPIO mappings for SCK, WS, SD
+#### MIMXRT GPIO mappings for SCK, WS, SD, MCK
 
-On boards supporting NXP i.MX RT processors I2S compatible GPIO pins are mapped to a specific I2S hardware bus.  In addition, GPIO pins are further specified as either Transmit or Receive.  The tables below show this mapping for 3 boards.  For example, the GPIO pin 4 can only be used with I2S ID=2 and transmitting to a DAC.
+On boards supporting NXP i.MX RT processors I2S compatible GPIO pins are mapped to a specific I2S hardware bus.  In addition, GPIO pins are further specified as either Transmit or Receive.  The tables below show this mapping for 3 boards.  For example, the GPIO pin 4 can be used with I2S ID=2 and transmitting to a DAC.  Other I2S pin mapping combinations exist, but are not needed for simple-to-use I2S hardware, such as the INMP441 microphone, or the I2S PCM5102 Stereo DAC Decoder.
 
 Teensy 4.1
 
 For transmitting to a DAC:
-|I2S ID|SCK pin|WS pin|SD pin|
-|--|--|--|--|
-|1|26,36|27,37|39,7|
-|2|4|3|2|
+|I2S ID|SCK pin|WS pin|SD pin|MCK pin|
+|--|--|--|--|--|
+|1|26,36|27,37|39,7|23|
+|2|4|3|2|33|
 
 For receiving from a microphone:
-|I2S ID|SCK pin|WS pin|SD pin|
-|--|--|--|--|
-|1|21|20|38,8|
+|I2S ID|SCK pin|WS pin|SD pin|MCK pin|
+|--|--|--|--|--|
+|1|21|20|38,8|23|
 
 Teensy 4.0
 
 For transmitting to a DAC:
-|I2S ID|SCK pin|WS pin|SD pin|
-|--|--|--|--|
-|1|26,36|27,37|7|
-|2|4|3|2|
+|I2S ID|SCK pin|WS pin|SD pin|MCK pin|
+|--|--|--|--|--|
+|1|26,36|27,37|7|23|
+|2|4|3|2|33|
 
 For receiving from a microphone:
-|I2S ID|SCK pin|WS pin|SD pin|
-|--|--|--|--|
-|1|21|20|8|
+|I2S ID|SCK pin|WS pin|SD pin|MCK pin|
+|--|--|--|--|--|
+|1|21|20|8|23|
 
 Seeed Arch Mix
 
 For transmitting to a DAC:
-|I2S ID|SCK pin|WS pin|SD pin|
-|--|--|--|--|
-|1|J4 14|J4 15|J4 13|
+|I2S ID|SCK pin|WS pin|SD pin|MCK pin|
+|--|--|--|--|--|
+|1|J4 14|J4 15|J4 13|J4 09|
 
 For receiving from a microphone:
-|I2S ID|SCK pin|WS pin|SD pin|
-|--|--|--|--|
-|1|J4 11|J4 10|J4 12|
+|I2S ID|SCK pin|WS pin|SD pin|MCK pin|
+|--|--|--|--|--|
+|1|J4 11|J4 10|J4 12|J4 09|
 
 ### Hardware Wiring Recommendations
 
