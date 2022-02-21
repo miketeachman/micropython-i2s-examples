@@ -4,19 +4,25 @@ This repository provides MicroPython example code, showing how to use the I2S pr
 
 The examples are supported on 3 ports:  STM32, ESP32, RP2.  
 
-To use I2S with MicroPython on the Pyboards, ESP32, and Raspberry Pi Pico you will need to install a version of MicroPython firmware that supports I2S.  For these ports, I2S is supported in the v1.18 release and all nightly builds.  There is also a PR to support I2S on the MIMXRT port, https://github.com/micropython/micropython/pull/8322
+To use I2S with MicroPython on the Pyboards, ESP32, and Raspberry Pi Pico you will need to install a version of MicroPython firmware that supports I2S.  For these ports, I2S is supported in the v1.18 release and all nightly builds.  
+
+There is also a PR to support I2S on the MIMXRT port, https://github.com/micropython/micropython/pull/8322
 
 The I2S feature is currently in a Technology Preview phase and may undergo changes as feedback is received from users. 
 
 #### Development Boards Tested
-  * Pyboard D SF2W
-  * Pyboard V1.1
-  * Adafruit Huzzah Feather ESP32 with external SD card
-  * Lolin D32 Pro
-  * Lolin D32 with external SD card
-  * TinyPico with external SD card
-  * Raspberry Pi Pico
-  * Teensy 4.1
+  * stm32 port:
+    * Pyboard D SF2W
+    * Pyboard V1.1
+  * esp32 port:
+    * Adafruit Huzzah Feather ESP32 with external SD card
+    * Lolin D32 Pro
+    * Lolin D32 with external SD card
+    * TinyPico with external SD card
+  * rp2 port:
+    * Raspberry Pi Pico
+  * mimxrt port:
+    * Teensy 4.1
   
 #### I2S Microphone Boards Tested
  * INMP441 microphone module available on ebay, aliexpress, amazon
@@ -107,7 +113,7 @@ To use different GPIO mappings refer to the sections below
 
 #### MIMXRT (Teensy 4.0/4.1) GPIO Pins
 
-All MIMXRT examples are designed for the Teensy 4.0/4.1 boards and use the following I2S peripheral ID and GPIO pins
+All MIMXRT examples are designed for the Teensy 4.0/4.1 boards and use the following I2S peripheral ID and GPIO pins.  **Note: the Teensy 4.1 is a better choice compared to the Teensy 4.0**.  The Teensy 4.1 has a built-in SD card slot that can be used with the `machine.SDCard` class, which offers fast SD card access.  The Teensy 4.0 requires an external SD card module, which only works with the slower `sdcard.py` driver.
 
 For transmitting to a DAC:
 |I2S ID|SCK pin|WS pin|SD pin|
@@ -120,7 +126,9 @@ For receiving from a microphone:
 |1|21|20|8|
 
 
-To use different GPIO mappings refer to the sections below#### Easy WAV Player example
+To use different GPIO mappings refer to the sections below
+
+#### Easy WAV Player example
 The file `easy_wav_player.py` contains an easy-to-use micropython example for playing WAV files.  This example requires
 an SD card (to store the WAV files).  Pyboards have a built in SD card.  Some ESP32 development boards have a built-in SD Card, such as the Lolin D32 Pro.  Other devices, such as the TinyPico and Raspberry Pi Pico require an external SD card module to be wired in.  Additionally, for the Raspberry Pi Pico [sdcard.py](https://github.com/micropython/micropython/blob/master/drivers/sdcard/sdcard.py) needs to be copied to the Pico's filesystem to enable SD card support.
 
