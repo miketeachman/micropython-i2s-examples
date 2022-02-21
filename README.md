@@ -310,7 +310,7 @@ Does a water analogy help to explain I2S?  comments welcome !
 
 ### FAQ
 Q: Are there sizing guidelines for the internal buffer (ibuf)?   
-A: A good starting point is to size the ibuf = 2x user buffer size.   For example, if the user buffer is 10kB, ibuf could be sized at 20kB.  If gaps are detected in the audio sample stream increasing the size of ibuf may mitigate these gaps. 
+A: For playback of wave files, a good starting point is to size the ibuf = 2x user buffer size.   For example, if the user buffer is 10kB, ibuf could be sized at 20kB.  If gaps are detected in the audio playback increasing the size of ibuf may mitigate the gaps. For microphone recordings, ibuf will often need to be much larger.  Unlike reads, data writes to most SD cards are not consistent - some writes can take much longer. For example, the average write speed might be 1000kB/s, but some writes may slow to 10kB/s.  Having a large ibuf accommodates these periods of slow data writes.  Consider starting with ibuf = 4x user buffer size.  Increase the ibuf size if gaps are detected in the recording.
 
 Q: How many seconds of audio data is held in the internal buffer (ibuf)?   
 A: T[seconds] = ibuf-size-in-bytes / sample-rate-in-samples-per-second / num-channels / sample-size-in-bytes    
