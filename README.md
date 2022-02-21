@@ -322,8 +322,8 @@ A: Smaller sizes will favour efficient use of heap space, but suffer from the in
 Q: What conditions causes gaps in the sample stream?  
 A: For writes to a DAC, a gap will happen when the internal buffer is filled at a slower rate than samples being sent to the I2S DAC.  This is called underflow.  For reads from a microphone, a gap will happen when the internal buffer is emptied at a slower rate than sample data is being read from the microphone.  This is called overflow.
 
-Q: Does the MicroPython I2S class support devices that need a MCLK signal?  
-A: No.  Supported I2S devices create an internally generated MCLK using the SCK or WS signals and a PLL.
+Q: Does the MicroPython I2S class support devices that need a MCK signal?  
+A: Yes, one port currently supports MCK.  The mimxrt port of I2S allows a MCK output to be defined.  Most devices that are popular with users do not need a MCK signal.
 
 #### Workaround for Adafruit I2S MEMS Microphone Breakout - SPH0645LM4H
 This is a well designed breakout board based on the SPH0645LM4H microphone device. Users need to be aware that the SPH0645LM4H device implements non-standard Philips I2S timing.  When used with the ESP32, all audio samples coming from the I2S microphone are shifted to the left by one bit. This increases the sound level by 6dB. More details on this problem are outlined a [StreetSense project log](https://hackaday.io/project/162059-street-sense/log/160705-new-i2s-microphone).  
