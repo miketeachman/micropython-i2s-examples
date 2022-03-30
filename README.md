@@ -2,11 +2,11 @@
 
 This repository provides MicroPython example code, showing how to use the I2S protocol with development boards supporting MicroPython.  The I2S protocol can be used to play WAV audio files through a speaker or headphone, or to record microphone audio to a WAV file on a SD card. 
 
-The examples are supported on 3 ports:  STM32, ESP32, RP2.  
+The examples are supported on 4 ports:  STM32, ESP32, RP2, MIMXRT.  
 
 To use I2S with MicroPython on the Pyboards, ESP32, and Raspberry Pi Pico you will need to install a version of MicroPython firmware that supports I2S.  For these ports, I2S is supported in the v1.18 release and all nightly builds.  
 
-There is also a PR to support I2S on the MIMXRT port, https://github.com/micropython/micropython/pull/8322
+The MIMXRT port is supported in the latest nightly build (as of March 30, 2022)
 
 The I2S feature is currently in a Technology Preview phase and may undergo changes as feedback is received from users. 
 
@@ -22,7 +22,8 @@ The I2S feature is currently in a Technology Preview phase and may undergo chang
   * rp2 port:
     * Raspberry Pi Pico
   * mimxrt port:
-    * Teensy 4.1
+    * Teensy 4.0/4.1
+    * MIMXRT evaluation boards
   
 #### I2S Microphone Boards Tested
  * INMP441 microphone module available on ebay, aliexpress, amazon
@@ -330,4 +331,4 @@ This is a well designed breakout board based on the SPH0645LM4H microphone devic
 Workaround:  Use the static I2S class method `shift()` to right shift all samples that are read from the microphone.
 
 #### Attributions
-"Le blues de la vache" by Le Collectif Unifié de la Crécelle is licensed under CC BY-NC-SA 2.1
+"Le blues de la vache" by Le Collectif UnifiÃ© de la CrÃ©celle is licensed under CC BY-NC-SA 2.1
