@@ -146,7 +146,7 @@ class WavPlayer:
                 sck=self.sck_pin,
                 ws=self.ws_pin,
                 sd=self.sd_pin,
-                mode=I2S.TX,
+                mode=I2S.CONTROLLER_TX,
                 bits=self.bits_per_sample,
                 format=self.format,
                 rate=self.sample_rate,

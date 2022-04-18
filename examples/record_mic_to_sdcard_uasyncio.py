@@ -213,7 +213,7 @@ try:
         sck=Pin(SCK_PIN),
         ws=Pin(WS_PIN),
         sd=Pin(SD_PIN),
-        mode=I2S.RX,
+        mode=I2S.CONTROLLER_RX,
         bits=WAV_SAMPLE_SIZE_IN_BITS,
         format=FORMAT,
         rate=SAMPLE_RATE_IN_HZ,
