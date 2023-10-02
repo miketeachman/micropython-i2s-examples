@@ -2,13 +2,9 @@
 
 This repository provides MicroPython example code, showing how to use the I2S protocol with development boards supporting MicroPython.  The I2S protocol can be used to play WAV audio files through a speaker or headphone, or to record microphone audio to a WAV file on a SD card. 
 
-The examples are supported on 4 ports:  STM32, ESP32, RP2, MIMXRT.  
+The examples are supported on 4 ports:  stm32, esp32, rp2, and mimxrt.  
 
-To use I2S with MicroPython on the Pyboards, ESP32, and Raspberry Pi Pico you will need to install a version of MicroPython firmware that supports I2S.  For these ports, I2S is supported in the v1.18 release and all nightly builds.  
-
-The MIMXRT port is supported in the latest nightly build (as of March 30, 2022)
-
-The I2S feature is currently in a Technology Preview phase and may undergo changes as feedback is received from users. 
+To use I2S with MicroPython on the Pyboards, ESP32, Raspberry Pi Pico, and mimxrt boards you will need to install a version of MicroPython firmware that supports I2S.  For these ports, I2S is supported in the v1.20 release and all nightly builds.  
 
 #### Development Boards Tested
   * stm32 port:
@@ -36,6 +32,7 @@ The I2S feature is currently in a Technology Preview phase and may undergo chang
    * I2S PCM5102 Stereo DAC Decoder available on ebay, aliexpress, amazon
    * Wondom 2 x 30W Class D Audio Amplifier Board & DAC, based on TI TAS5756 device
    * Custom board, based on TI TAS2505 Digital Input Class-D Speaker Amplifier
+   * Teensy audio sheild for Teensy 4.x 
    
 #### Quick Start - play an audio tone through ear phones
 The easiest way to get started with I2S is playing a pure tone to ear phones using a DAC board such as the I2S UDA1334A breakout board or the I2S PCM5102 Stereo DAC Decoder board.  Here are the steps:
@@ -131,7 +128,7 @@ To use different GPIO mappings refer to the sections below
 
 #### Easy WAV Player example
 The file `easy_wav_player.py` contains an easy-to-use micropython example for playing WAV files.  This example requires
-an SD card (to store the WAV files).  Pyboards have a built in SD card.  Some ESP32 development boards have a built-in SD Card, such as the Lolin D32 Pro.  Other devices, such as the TinyPico and Raspberry Pi Pico require an external SD card module to be wired in.  Additionally, for the Raspberry Pi Pico [sdcard.py](https://github.com/micropython/micropython/blob/master/drivers/sdcard/sdcard.py) needs to be copied to the Pico's filesystem to enable SD card support.
+an SD card (to store the WAV files).  Pyboards have a built in SD card.  Some ESP32 development boards have a built-in SD Card, such as the Lolin D32 Pro.  Other devices, such as the TinyPico and Raspberry Pi Pico require an external SD card module to be wired in.  Additionally, for the Raspberry Pi Pico [sdcard.py](https://github.com/micropython/micropython-lib/blob/master/micropython/drivers/storage/sdcard/sdcard.py) needs to be copied to the Pico's filesystem to enable SD card support.
 
 Instructions
 1. Wire up the hardware.  e.g.  connect the I2S playback module to the development board, and connect an external SD Card Module (if needed).  See tips on hardware wiring below.  The example uses the default GPIO pins outlined above.  These can 
@@ -227,6 +224,12 @@ For receiving from a microphone:
 |I2S ID|SCK pin|WS pin|SD pin|MCK pin|
 |--|--|--|--|--|
 |1|J4 11|J4 10|J4 12|J4 09|
+
+### Generating a Master Clock using machine.PWM
+
+Some audio codecs require a Master Clock signal at a typical frequency of 256 * sampling frequency.  
+Only the mimxrt port supports Master Clock generation in the I2S class.  For other ports, the machine.PWM 
+class offers a convenient way to generate the Master Clock signal. Here is some [example code](teensy_audio_shield/play_teensy_audio_shield_esp32.py) showing how to generate a Master Clock for the teensy audio shield.
 
 ### Hardware Wiring Recommendations
 
