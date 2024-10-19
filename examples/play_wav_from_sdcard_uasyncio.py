@@ -53,7 +53,7 @@ elif os.uname().machine.count("ESP32"):
     WS_PIN = 25
     SD_PIN = 33
     I2S_ID = 0
-    BUFFER_LENGTH_IN_BYTES = 2200
+    BUFFER_LENGTH_IN_BYTES = 40000
     # ======= I2S CONFIGURATION =======
 
 elif os.uname().machine.count("Raspberry"):
