@@ -56,7 +56,7 @@ elif os.uname().machine.count("ESP32"):
 
 elif os.uname().machine.count("Raspberry"):
     from sdcard import SDCard
-    from machine import SPI
+    from machine import SPI, ADC
 
     cs = Pin(13, machine.Pin.OUT)
     spi = SPI(
@@ -84,6 +84,10 @@ elif os.uname().machine.count("Raspberry"):
     I2S_ID = 0
     BUFFER_LENGTH_IN_BYTES = 40000
     # ======= I2S CONFIGURATION =======
+    
+    # ======= ADC CONFIGURATION =======
+    adc = ADC(0)  # ADC0 corresponds to GPIO26 on Raspberry Pi Pico
+    # ======= ADC CONFIGURATION =======
 
 elif os.uname().machine.count("MIMXRT"):
     from machine import SDCard
@@ -116,6 +120,10 @@ wp.play("music-16k-16bits-stereo.wav", loop=False)
 # wait until the entire WAV file has been played
 while wp.isplaying() == True:
     # other actions can be done inside this loop during playback
+    adc_value = adc.read_u16()  # Read 16-bit ADC value (0-65535)
+    volume = adc_value / 65535  # Normalize to 0.0 - 1.0
+    wp.set_volume(volume)
+    time.sleep(0.05)
     pass
 
 wp.play("music-16k-16bits-mono.wav", loop=False)

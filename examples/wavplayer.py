@@ -56,6 +56,46 @@ class WavPlayer:
         # allocate audio sample array buffer
         self.wav_samples_mv = memoryview(bytearray(10000))
 
+        # Initialize volume control variable (0.0 to 1.0)
+        self.volume = 1.0
+        self.volume_int = 256  # 256 corresponds to 1.0 in fixed-point representation
+
+    def set_volume(self, volume):
+        if 0 <= volume <= 1:
+            self.volume = volume
+            self.volume_int = int(volume * 256)  # Scale to 0-256
+        else:
+            raise ValueError("Volume must be between 0.0 and 1.0")
+    
+    @micropython.viper
+    def adjust_volume_16bit(self, data_in: ptr8, length: int, volume_int: int):
+        data = ptr8(data_in)
+        n = int(length // 2)
+        for i in range(n):
+            # Read two bytes and combine them into a signed 16-bit integer
+            low = int(data[2 * i])
+            high = int(data[2 * i + 1])
+            sample = (high << 8) | low
+            if sample >= 32768:
+                sample -= 65536  # Convert to signed int16
+
+            # Adjust volume
+            sample = (sample * volume_int) >> 8
+
+            # Clip to int16 range
+            if sample > 32767:
+                sample = 32767
+            elif sample < -32768:
+                sample = -32768
+
+            # Convert back to unsigned int16
+            if sample < 0:
+                sample += 65536
+
+            # Store back into data buffer
+            data[2 * i] = sample & 0xFF
+            data[2 * i + 1] = (sample >> 8) & 0xFF
+
     def i2s_callback(self, arg):
         if self.state == WavPlayer.PLAY:
             self.num_read = self.wav.readinto(self.wav_samples_mv)
@@ -69,6 +109,10 @@ class WavPlayer:
                     _ = self.wav.seek(self.first_sample_offset)
                 _ = self.audio_out.write(self.silence_samples)
             else:
+                # Adjust volume
+                if self.bits_per_sample == 16:
+                    volume_int = self.volume_int  # Integer between 0 and 256
+                    self.adjust_volume_16bit(self.wav_samples_mv, self.num_read, volume_int)
                 _ = self.audio_out.write(self.wav_samples_mv[: self.num_read])
         elif self.state == WavPlayer.RESUME:
             self.state = WavPlayer.PLAY
