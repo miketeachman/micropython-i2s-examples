@@ -133,10 +133,10 @@ an SD card (to store the WAV files).  Pyboards have a built in SD card.  Some ES
 Instructions
 1. Wire up the hardware.  e.g.  connect the I2S playback module to the development board, and connect an external SD Card Module (if needed).  See tips on hardware wiring below.  The example uses the default GPIO pins outlined above.  These can 
 be customized, if needed.
-1. copy file `wavplayer.py` to the internal flash file system using a command line tool such as ampy or rshell.
+1. copy file `wavplayer.py` to the internal flash file system using a command line tool such as ampy or rshell. The Thonny IDE also offers an easy way to copy this file (View->Files, `Upload to /` option).
 1. copy the WAV file(s) you want to play to an SD card.  Plug the SD card into the SD card Module.
 1. configure the file `easy_wav_player.py` to specify the WAV file(s) to play
-1. copy the file `easy_wav_player.py` to the internal flash file system using a command line tool such as ampy or rshell.
+1. copy the file `easy_wav_player.py` to the internal flash file system using a command line tool such as ampy or rshell. The Thonny IDE also offers an easy way to copy this file (View->Files, `Upload to /` option).
 1. run `easy_wav_player.py` by importing the file into the REPL.  e.g.  import easy_wav_player
 1. try various ways of playing a WAV file, using the `pause()`, `resume()`, and `stop()` methods
 

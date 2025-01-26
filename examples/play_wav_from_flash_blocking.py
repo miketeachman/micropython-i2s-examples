@@ -13,7 +13,7 @@
 # - the write() method blocks until the entire sample buffer is written to I2S
 #
 # Use a tool such as rshell or ampy to copy the WAV file "side-to-side-8k-16bits-stereo.wav"
-# to internal flash memory
+# to internal flash memory. The Thonny IDE also offers an easy way to copy this file (View->Files, `Upload to /` option).
 
 
 import os
