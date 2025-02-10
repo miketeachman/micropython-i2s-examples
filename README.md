@@ -20,6 +20,7 @@ To use I2S with MicroPython on the Pyboards, ESP32, Raspberry Pi Pico, and mimxr
   * mimxrt port:
     * Teensy 4.0/4.1
     * MIMXRT evaluation boards
+    * Seeed Arch Mix
   
 #### I2S Microphone Boards Tested
  * INMP441 microphone module available on ebay, aliexpress, amazon
@@ -41,22 +42,22 @@ The easiest way to get started with I2S is playing a pure tone to ear phones usi
 1. Load the example code `play_tone.py` into a text editor, found in the [examples](examples) folder
 1. Make the following wiring connections using a quality breadboard and jumper wires.  Use the GPIO pins that are listed in the example code file.  Refer to the section on `Hardware Wiring Recommendations` below.
 
-    |UDA1334A board pin|Pyboard V1.1 pin|Pyboard D pin|ESP32 pin|Pico Pin|Teensy 4.1 pin|
-    |--|--|--|--|--|--|
-    |3V0|3V3|3V3|3V3|3V3|3.3V|
-    |GND|GND|GND|GND|GND|GND|
-    |BCLK|Y6|Y6|32|16|4|
-    |WSEL|Y5|Y5|25|17|3|
-    |DIN|Y8|Y8|33|18|2|
+| UDA1334A board pin | Pyboard V1.1 pin | Pyboard D pin | ESP32 pin | Pico Pin | Teensy 4.1 pin | Arch Mix pin |
+|--------------------|------------------|---------------|-----------|----------|----------------|--------------|
+| 3V0                | 3V3              | 3V3           | 3V3       | 3V3      | 3.3V           | 3V3          |
+| GND                | GND              | GND           | GND       | GND      | GND            | GND          |
+| BCLK               | Y6               | Y6            | 32        | 16       | 4              | J4_14        |
+| WSEL               | Y5               | Y5            | 25        | 17       | 3              | J4_15        |
+| DIN                | Y8               | Y8            | 33        | 18       | 2              | J4_13        |
 
-    |PCM5102 board pin|Pyboard V1.1 pin|Pyboard D pin|ESP32 pin|Pico Pin|Teensy 4.1 pin|
-    |--|--|--|--|--|--|
-    |VIN|3V3|3V3|3V3|3V3|3.3V|
-    |GND|GND|GND|GND|GND|GND|
-    |SCK|GND|GND|GND|GND|GND|
-    |BCK|Y6|Y6|32|16|4|
-    |LCK|Y5|Y5|25|17|3|
-    |DIN|Y8|Y8|33|18|2|
+| PCM5102 board pin | Pyboard V1.1 pin | Pyboard D pin | ESP32 pin | Pico Pin | Teensy 4.1 pin | Arch Mix pin |
+|-------------------|------------------|---------------|-----------|----------|----------------|--------------|
+| VIN               | 3V3              | 3V3           | 3V3       | 3V3      | 3.3V           | 3V3          |
+| GND               | GND              | GND           | GND       | GND      | GND            | GND          |
+| SCK               | GND              | GND           | GND       | GND      | GND            | GND          |
+| BCK               | Y6               | Y6            | 32        | 16       | 4              | J4_14        |
+| LCK               | Y5               | Y5            | 25        | 17       | 3              | J4_15        |
+| DIN               | Y8               | Y8            | 33        | 18       | 2              | J4_13        |
     
 1. Establish a REPL connection to the board
 1. Copy the code from the editor e.g.  ctrl-A, ctrl-C
